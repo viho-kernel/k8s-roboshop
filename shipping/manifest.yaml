@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shipping
+  namespace: roboshop
+  labels:
+    project: roboshop
+    tier: backend
+    component: shipping
+data:
+  CART_ENDPOINT: "cart"
+  DB_HOST: "mysql"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipping
+  namespace: roboshop
+  labels:
+    project: roboshop
+    tier: backend
+    component: shipping
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: roboshop
+      tier: backend
+      component: shipping
+  template:
+    metadata:
+      labels:
+        project: roboshop
+        tier: backend
+        component: shipping
+    spec:
+      containers:
+        - name: shipping
+          image: viharireddy18/shipping:1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping
+  labels:
+    project: roboshop
+    tier: backend
+    component: shipping
+spec:
+  selector:
+    matchLabels:
+      project: roboshop
+      tier: backend
+      component: shipping
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
