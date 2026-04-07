@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: roboshop
+  labels:
+    project: roboshop
+    tier: db
+    component: mongodb
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: roboshop
+      tier: db
+      component: mongodb
+  template:
+    metadata:
+      labels:
+        project: roboshop
+        tier: db
+        component: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: viharireddy18/mongodb:1.0.0
+          ports:
+            - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: roboshop
+  name: mongodb
+  labels:
+    project: roboshop
+    tier: db
+    component: mongodb
+spec:
+  # 'type: ClusterIP' is the default if not specified
+  type: ClusterIP
+  selector:
+    matchLabels:
+      project: roboshop
+      tier: db
+      component: mongodb
+      # Must match the labels on your Pods
+  ports:
+    - protocol: TCP
+      port: 27017 # The port the service listens on inside the cluster
+      targetPort: 27017 # The port the application is actually running on in the Pod
+

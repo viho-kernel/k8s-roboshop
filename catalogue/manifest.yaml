@@ -1,0 +1,69 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalogue
+  namespace: roboshop
+  labels:
+    project: roboshop
+    tier: backend
+    component: catalogue
+data:
+  MONGO: "true"
+  MONGO_URL: "mongodb://mongodb:27017/catalogue"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogue
+  namespace: roboshop
+  labels:
+    project: roboshop
+    tier: backend
+    component: catalogue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: roboshop
+      tier: backend
+      component: catalogue
+  template:
+    metadata:
+      labels:
+        project: roboshop
+        tier: backend
+        component: catalogue
+    spec:
+      containers:
+        - name: catalogue
+          image: viharireddy18/catalogue:1.0.0
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: catalogue
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: roboshop
+  name: catalogue
+  labels:
+    project: roboshop
+    tier: backend
+    component: catalogue
+spec:
+  # 'type: ClusterIP' is the default if not specified
+  type: ClusterIP
+  selector:
+    matchLabels:
+      project: roboshop
+      tier: backend
+      component: catalogue
+      # Must match the labels on your Pods
+  ports:
+    - protocol: TCP
+      port: 8080 # The port the service listens on inside the cluster
+      targetPort: 8080 # The port the application is actually running on in the Pod
+
