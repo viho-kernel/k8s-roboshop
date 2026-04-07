@@ -39,7 +39,7 @@ spec:
     spec:
       containers:
         - name: catalogue
-          image: joindevops/catalogue:1.4.0
+          image: viharireddy18/catalogue:1.0.0
           imagePullPolicy: Always # safe to pull everytime, there may be images with same version rebuilt and pushed
           resources:
             requests:
@@ -49,9 +49,6 @@ spec:
               cpu: "100m"
               memory: "128Mi"
           readinessProbe:
-            # httpGet:
-            #   path: /health
-            #   port: 8080
             tcpSocket:
               port: 8080
             failureThreshold: 2
