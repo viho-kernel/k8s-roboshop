@@ -50,6 +50,9 @@ spec:
               cpu: "100m"
               memory: "128Mi"
           readinessProbe:
+            # httpGet:
+            #   path: /health
+            #   port: 8080
             tcpSocket:
               port: 8080
             failureThreshold: 2
