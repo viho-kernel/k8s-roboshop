@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
         - name: rabbitmq
-          image: viharireddy18/rabbitmq:1.0.0
+          image: rabbitmq:3
           envFrom:
             - configMapRef:
                 name: rabbitmq
