@@ -24,9 +24,9 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-    project: roboshop
-    tier: db
-    component: rabbitmq
+      project: roboshop
+      tier: db
+      component: rabbitmq
   template:
     metadata:
       labels:
