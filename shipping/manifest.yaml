@@ -10,13 +10,13 @@ metadata:
 data:
   CART_ENDPOINT: "cart:8080"
   DB_HOST: "mysql"
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: shipping
   namespace: roboshop
+  # these labels are replicaset labels
   labels:
     project: roboshop
     tier: backend
@@ -24,10 +24,12 @@ metadata:
 spec:
   replicas: 1
   selector:
+    # using these labels replica set selects the pod
     matchLabels:
       project: roboshop
       tier: backend
       component: shipping
+  # This is pod definition, pod is subset of replicaset
   template:
     metadata:
       labels:
@@ -37,24 +39,39 @@ spec:
     spec:
       containers:
         - name: shipping
-          image: viharireddy18/shipping:1.0.0
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8080
+          image: viharireddy18/shipping:1.4.0
+          imagePullPolicy: Always # safe to pull everytime, there may be images with same version rebuilt and pushed
           resources:
             requests:
-              cpu: "100m"
-              memory: "128Mi"
+              cpu: "200m"
+              memory: "256Mi"
             limits:
-              cpu: "100m"
-              memory: "128Mi"
+              cpu: "200m"
+              memory: "256Mi"
+          readinessProbe:
+            # httpGet:
+            #   path: /health
+            #   port: 8080
+            tcpSocket:
+              port: 8080
+            failureThreshold: 2
+            periodSeconds: 10
+            initialDelaySeconds: 15
           startupProbe:
             httpGet:
               path: /health
               port: 8080
-            initialDelaySeconds: 15
+            failureThreshold: 20
             periodSeconds: 10
-            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            failureThreshold: 2
+            periodSeconds: 10
+          envFrom:
+            - configMapRef:
+                name: shipping
 ---
 apiVersion: v1
 kind: Service
@@ -67,11 +84,11 @@ metadata:
     component: shipping
 spec:
   selector:
+    # labels are used as selectors
     project: roboshop
     tier: backend
     component: shipping
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 8080
-  type: ClusterIP
+      port: 8080 # servie port
+      targetPort: 8080 # container port
