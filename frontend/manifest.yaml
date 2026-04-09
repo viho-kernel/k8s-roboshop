@@ -73,9 +73,12 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  namespace: roboshop
+  name: frontend
   labels:
-    app: nginx
+    project: roboshop
+    tier: frontend
+    component: frontend
 spec:
   replicas: 1
   selector:
