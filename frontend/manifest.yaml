@@ -104,7 +104,7 @@ spec:
             name: frontend
       containers:
         - name: frontend
-          image: viharireddy18/frontend:1.4.0
+          image: viharireddy18/frontend:1.0.0
           imagePullPolicy: Always # safe to pull everytime, there may be images with same version rebuilt and pushed
           resources:
             requests:
